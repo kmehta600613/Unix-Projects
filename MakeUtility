@@ -1,0 +1,48 @@
+all: hello hello1 hello2 hello3
+
+hello: hello.cpp
+     g++ -o hello hello.cpp
+
+hello1: hello.cpp w1.o
+     g++ -o hello1 hello.cpp w1.o -D_w1
+
+hello2: hello.cpp w1.o w2.o
+     g++ -o hello2 hello.cpp w1.o w2.o -D_w1 -D_w2
+
+hello3: hello.cpp w1.o w2.o w3.o
+     g++ -o hello3 hello.cpp w1.o w2.o w3.o -D_w1 -D_w2 -D_w3
+
+w1.o: w1.cpp
+     g++ -c w1.cpp
+
+w2.o: w2.cpp
+     g++ -c w2.cpp
+
+w3.o: w3.cpp
+     g++ -c w3.cpp
+
+w1.cpp: cookie
+     sed 's/cookie/w1/' cookie > w1.cpp
+
+w2.cpp: cookie
+     sed 's/cookie/w2/' cookie > w2.cpp
+
+w3.cpp: cookie
+     sed 's/cookie/w3/' cookie > w3.cpp
+     
+hello.cpp: A.txt B.txt C.txt
+     cat A.txt > hello.cpp
+     cat B.txt >> hello.cpp
+     cat C.txt >> hello.cpp
+
+A.txt: script1
+     cat script1 > A.txt
+
+B.txt: script2 cake
+     script2 cake B.txt
+
+C.txt: script3
+     cat script3 > C.txt
+
+clean:
+     rm w1.o w2.o w3.o A.txt B.txt C.txt w1.cpp w2.cpp w3.cpp hello.cpp
