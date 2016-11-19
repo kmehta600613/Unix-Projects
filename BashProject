@@ -1,0 +1,96 @@
+#!/bin/bash
+mkdir DUMP
+echo "*************** created DUMP"
+chmod u+rwx DUMP
+echo "*************** list current directory with permissions: $(ls -l)"
+cd DUMP
+for i in {11..20}
+do
+  echo "*************** created file dump$i"
+  if [ "$i" -lt 18 ]
+  then
+    echo "I am dump$i" >> dump$i
+    echo "Next file is dump$(($i+1))" >> dump$i
+    echo "After that comes dump$(($i+2))" >> dump$i
+  else
+    if [ "$i" -eq 19 ]
+    then 
+      echo "I am dump $i" >> dump$i
+      echo "Next file is dump$(($i+1))" >> dump$i
+      echo "There is no file after" >> dump$i
+    else
+      if [ "$i" -eq 20 ]
+      then 
+        echo "I am dump$i" >> dump$i
+        echo "There is no next file" >> dump$i
+      fi
+    fi
+  fi
+done
+cd ..
+files=`ls`
+echo "*************** list all regular files in current directory: "
+for f in $files
+do
+  if [ -f $f ]
+  then
+    echo $f
+  fi
+done
+cd DUMP
+dumpfiles=`ls`
+echo "*************** list all regular files in DUMP: "
+for a in $dumpfiles
+do
+  if [ -f $a ]
+  then
+    echo $a
+  fi
+done
+echo "*************** contents of all regular files in DUMP: "
+for b in $dumpfiles
+do
+  if [ -f $b ]
+  then
+    echo $b:
+    cat $b
+    echo "-------------------------"
+  fi
+done
+for c in $dumpfiles
+do
+  if grep -q '0\|7' $c
+  then
+    rm $c
+  fi 
+done
+echo "*************** list all regular files of DUMP: "
+for d in $dumpfiles
+do
+  if [ -f $d ]
+  then
+    echo $d
+  fi
+done
+temp=$(mktemp)
+cat dump11 dump12 dump13 dump14 > temp
+echo "*************** contents of JOINTFILE: " 
+grep '6' temp > JOINTFILE
+echo "$(cat JOINTFILE)"
+rm temp
+echo "*************** list all regular files in DUMP with permissions: $(ls -l)"
+chmod u+rwx JOINTFILE
+chmod g+rw JOINTFILE
+chmod o+r JOINTFILE
+echo "*************** list all regular files in DUMP with permissions: $(ls -l)"
+delete_files=`ls`
+for e in $delete_files
+do
+  if [ "${e:0:4}" = "dump" ]
+  then
+    rm $e
+  fi
+done
+rm JOINTFILE
+cd ..
+rm -r DUMP
